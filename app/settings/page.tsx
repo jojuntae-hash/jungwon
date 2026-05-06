@@ -202,11 +202,20 @@ export default function SettingsPage() {
   };
 
   const togglePostSelection = (postId: string) => {
-    setSelectedHomePosts(prev => 
-      prev.includes(postId) 
-        ? prev.filter(id => id !== postId) 
-        : [...prev, postId].slice(0, 8) // Limit to 8
-    );
+    setSelectedHomePosts(prev => {
+      // Filter out IDs that no longer exist in allPosts
+      const currentValid = prev.filter(id => allPosts.some(p => p.id === id));
+      
+      if (currentValid.includes(postId)) {
+        return currentValid.filter(id => id !== postId);
+      } else {
+        if (currentValid.length >= 8) {
+          alert('최대 8개까지만 선택할 수 있습니다.');
+          return currentValid;
+        }
+        return [...currentValid, postId];
+      }
+    });
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
