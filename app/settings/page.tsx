@@ -184,7 +184,7 @@ export default function SettingsPage() {
         album_font: albumFont,
         album_font_size: albumFontSize,
         album_align: albumAlign,
-        selected_home_posts: selectedHomePosts,
+        selected_home_posts: selectedHomePosts.filter(id => allPosts.some(p => p.id === id)),
         show_banner: showBanner,
         updated_at: new Date().toISOString(),
       });
@@ -560,7 +560,7 @@ export default function SettingsPage() {
               )}
             </div>
             <div className={styles.selectionInfo}>
-              선택됨: {selectedHomePosts.length} / 8
+              선택됨: {selectedHomePosts.filter(id => allPosts.some(p => p.id === id)).length} / 8
             </div>
           </section>
 
