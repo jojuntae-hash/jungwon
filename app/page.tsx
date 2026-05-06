@@ -102,6 +102,14 @@ export default function Home() {
   const albumAlignProps = getAlignmentProps(settings.albumAlign);
   const bannerAlignProps = getAlignmentProps(settings.bannerPos);
 
+  if (isLoading) {
+    return (
+      <div style={{ backgroundColor: '#000', height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
+        정원의 정원을 불러오는 중...
+      </div>
+    );
+  }
+
   return (
     <>
       <div className={styles.container}>
