@@ -259,8 +259,23 @@
   }
 
   .heroOverlay {
-    background: linear-gradient(to right, 
-      var(--card-bg) 40%, 
-      rgba(var(--bg-color-rgb), 0.6) 100%);
+    background: linear-gradient(to top, 
+      rgba(0, 0, 0, 0.4) 0%, 
+      transparent 100%); /* 가림막을 아래쪽 글씨 뒤에만 살짝 둡니다 */
+  }
+
+  .heroContent {
+    padding: 0 20px;
+    bottom: 20px;
+    top: auto;
+    transform: none;
+    text-align: center !important;
+    width: 100% !important;
+    left: 0 !important;
+  }
+
+  .heroTitle {
+    font-size: 24px !important;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
   }
 }
