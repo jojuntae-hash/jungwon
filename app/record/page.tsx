@@ -106,6 +106,7 @@ export default function RecordPage() {
         if (ctx) {
           // Calculate the size the image should be on the 1200x900 canvas
           let dWidth, dHeight;
+          const imgAspect = img.width / img.height;
           const canvasAspect = 1200 / 900;
           
           if (imgAspect > canvasAspect) {
