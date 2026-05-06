@@ -156,7 +156,7 @@ export default function RecordPage() {
       // 2. Save post to Supabase
       const { error } = await supabase.from('posts').insert({
         title,
-        link,
+        google_photos_link: link,
         content,
         thumbnail_url: thumbnailUrl,
         tags,
