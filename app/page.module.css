@@ -11,7 +11,9 @@
 .heroBanner {
   position: relative;
   width: 100%;
-  height: 350px;
+  aspect-ratio: 1200 / 350;
+  height: auto;
+  min-height: 200px;
   border-radius: 40px;
   overflow: hidden;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
@@ -207,7 +209,7 @@
   }
   
   .heroBanner {
-    height: 280px;
+    min-height: 180px;
     border-radius: 30px;
   }
   
@@ -231,7 +233,7 @@
 
 @media (max-width: 600px) {
   .heroBanner {
-    height: 220px;
+    min-height: 160px;
   }
   
   .heroContent {
