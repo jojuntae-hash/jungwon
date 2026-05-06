@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "npx @cloudflare/next-on-pages --outdir dist && rm -f dist/index.html"
+    "pages:build": "npx @cloudflare/next-on-pages --outdir dist && find dist -name \"index.html\" -delete"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.2",
