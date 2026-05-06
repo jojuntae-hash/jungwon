@@ -13,13 +13,13 @@ export default function ThemeProvider({ children }: { children: React.ReactNode 
     const fetchTheme = async () => {
       const { data, error } = await supabase
         .from('site_settings')
-        .select('theme')
+        .select('theme, font_family')
         .eq('id', 'global')
         .single();
 
       if (data && !error) {
         setCurrentThemeId(data.theme || 'classic-garden');
-        setCurrentFontId(data.font_family || 'noto-sans');
+        setCurrentFontId((data as any).font_family || 'noto-sans');
       }
     };
 
