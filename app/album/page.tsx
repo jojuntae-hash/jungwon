@@ -94,6 +94,40 @@ export default function AlbumPage() {
     }
   };
 
+  const handleToggleFavorite = async (e: React.MouseEvent, postId: string, currentStatus: boolean) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const newStatus = !currentStatus;
+
+    // Update local state immediately for better UX
+    setPosts(prevPosts => 
+      prevPosts.map(post => 
+        post.id === postId ? { ...post, is_favorite: newStatus } : post
+      )
+    );
+
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ is_favorite: newStatus })
+        .eq('id', postId);
+
+      if (error) {
+        throw error;
+      }
+    } catch (err) {
+      console.error('Error updating favorite status:', err);
+      // Revert local state if update fails
+      setPosts(prevPosts => 
+        prevPosts.map(post => 
+          post.id === postId ? { ...post, is_favorite: currentStatus } : post
+        )
+      );
+      alert('좋아요 상태를 변경하는 중 오류가 발생했습니다.');
+    }
+  };
+
   const sortedPosts = getSortedPosts();
 
   // 1. Filter posts by search query and favorites
@@ -206,7 +240,10 @@ export default function AlbumPage() {
                     >
                       {post.title}
                     </h3>
-                    <div className={styles.heartBtn}>
+                    <div 
+                      className={styles.heartBtn}
+                      onClick={(e) => handleToggleFavorite(e, post.id, post.is_favorite)}
+                    >
                       <svg width="18" height="18" viewBox="0 0 24 24" fill={post.is_favorite ? "#E6A8A8" : "none"} stroke={post.is_favorite ? "#E6A8A8" : "#D0CCD3"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                       </svg>

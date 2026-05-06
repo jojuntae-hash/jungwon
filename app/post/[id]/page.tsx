@@ -3,13 +3,14 @@
 export const runtime = 'edge';
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import styles from './post.module.css';
 
 export default function PostDetail() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id as string;
   
   const [post, setPost] = useState<any>(null);
@@ -38,6 +39,49 @@ export default function PostDetail() {
     fetchPost();
   }, [id]);
 
+  const handleToggleFavorite = async () => {
+    if (!post) return;
+
+    const currentStatus = post.is_favorite || false;
+    const newStatus = !currentStatus;
+
+    // Update local state
+    setPost({ ...post, is_favorite: newStatus });
+
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .update({ is_favorite: newStatus })
+        .eq('id', id);
+
+      if (error) throw error;
+    } catch (err) {
+      console.error('Error updating favorite status:', err);
+      // Revert local state
+      setPost({ ...post, is_favorite: currentStatus });
+      alert('좋아요 상태를 변경하는 중 오류가 발생했습니다.');
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm('정말로 이 기록을 삭제하시겠습니까?')) return;
+
+    try {
+      const { error } = await supabase
+        .from('posts')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      alert('성공적으로 삭제되었습니다.');
+      router.push('/album');
+    } catch (err: any) {
+      console.error('Error deleting post:', err);
+      alert('삭제 중 오류가 발생했습니다: ' + err.message);
+    }
+  };
+
   if (isLoading) {
     return <div className={styles.container} style={{ textAlign: 'center', padding: '100px' }}>로딩중...</div>;
   }
@@ -60,6 +104,16 @@ export default function PostDetail() {
         </div>
         
         <div className={styles.headerRight}>
+          <button 
+            className={`${styles.heartBtn} ${post.is_favorite ? styles.heartBtnActive : ''}`}
+            onClick={handleToggleFavorite}
+            title={post.is_favorite ? "좋아요 취소" : "좋아요"}
+          >
+            <svg width="22" height="22" viewBox="0 0 24 24" fill={post.is_favorite ? "#E6A8A8" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+            </svg>
+          </button>
+
           <Link href={`/edit/${post.id}`}>
             <button className={styles.editBtn}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -69,6 +123,16 @@ export default function PostDetail() {
               수정하기
             </button>
           </Link>
+
+          <button className={styles.deleteBtn} onClick={handleDelete}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            삭제하기
+          </button>
         </div>
       </div>
 
