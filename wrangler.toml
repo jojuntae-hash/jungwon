@@ -1,0 +1,7 @@
+name = "jungwon"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = ".vercel/output"
+
+[vars]
+# 환경 변수는 대시보드에 설정된 것을 그대로 사용합니다.
