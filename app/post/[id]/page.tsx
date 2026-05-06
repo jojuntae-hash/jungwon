@@ -6,9 +6,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/hooks/useAuth';
 import styles from './post.module.css';
 
 export default function PostDetail() {
+  const { user } = useAuth();
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
@@ -67,12 +69,36 @@ export default function PostDetail() {
     if (!window.confirm('정말로 이 기록을 삭제하시겠습니까?')) return;
 
     try {
-      const { error } = await supabase
+      // 1. First, try to delete with a count check
+      const { error, count } = await supabase
         .from('posts')
-        .delete()
+        .delete({ count: 'exact' })
         .eq('id', id);
 
       if (error) throw error;
+
+      // If count is 0, it might be due to RLS or the record already being gone
+      if (count === 0) {
+        // Double check if the post exists and who owns it
+        const { data: checkData } = await supabase
+          .from('posts')
+          .select('user_id')
+          .eq('id', id)
+          .single();
+
+        if (!checkData) {
+          alert('이미 삭제된 게시글이거나 찾을 수 없습니다.');
+          router.push('/album');
+          return;
+        }
+
+        if (checkData.user_id !== user?.id) {
+          alert('본인이 작성한 글만 삭제할 수 있습니다.');
+        } else {
+          alert('삭제 권한이 없거나 오류가 발생했습니다. 관리자에게 문의하세요.');
+        }
+        return;
+      }
 
       alert('성공적으로 삭제되었습니다.');
       router.push('/album');
