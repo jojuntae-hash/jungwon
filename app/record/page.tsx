@@ -160,7 +160,7 @@ export default function RecordPage() {
         content,
         thumbnail_url: thumbnailUrl,
         tags,
-        author_id: user?.id,
+        user_id: user?.id,
         created_at: new Date().toISOString(),
       });
 
