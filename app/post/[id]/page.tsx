@@ -86,10 +86,13 @@ export default function PostDetail() {
               }
             }}
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+            <svg viewBox="0 0 24 24" width="20" height="20" style={{ marginRight: '8px' }}>
+              <path fill="#ea4335" d="M11 6a5 5 0 0 1 5 5v1h1a5 5 0 0 1 0 10h-1v-1a5 5 0 0 1-5-5V6z"/>
+              <path fill="#4285f4" d="M13 18a5 5 0 0 1-5-5v-1H7a5 5 0 0 1 0-10h1v1a5 5 0 0 1 5 5v11z"/>
+              <path fill="#fbbc05" d="M6 13a5 5 0 0 1 5-5h1v-1a5 5 0 0 1 10 0v1h-1a5 5 0 0 1-5 5H6z"/>
+              <path fill="#34a853" d="M18 11a5 5 0 0 1-5 5h-1v1a5 5 0 0 1-10 0v-1h1a5 5 0 0 1 5-5h10z"/>
             </svg>
-            구글 포토 앨범 보기
+            구글 포토 앨범에서 보기
           </a>
           
           <div className={styles.albumSection}>

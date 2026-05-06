@@ -138,32 +138,31 @@
 }
 
 .googlePhotosBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 28px;
-  background-color: #4285F4;
-  color: white;
-  border: none;
-  border-radius: 50px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(66, 133, 244, 0.3);
-  transition: all 0.3s ease;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  color: #3C4043;
+  font-size: 14px;
+  font-weight: 600;
   text-decoration: none;
-  margin-bottom: 20px;
-  width: fit-content;
+  transition: all 0.2s ease;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
 .googlePhotosBtn:hover {
-  background-color: #357ABD;
+  background: #FFFFFF;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(66, 133, 244, 0.4);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
 }
 
 .googlePhotosBtn svg {
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+  margin-right: 4px;
 }
 
 /* Responsive Styles */
