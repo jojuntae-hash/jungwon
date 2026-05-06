@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "pages:build": "npx @cloudflare/next-on-pages --out .vercel/output"
+    "pages:build": "npx @cloudflare/next-on-pages --outdir .vercel/output"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.105.2",
