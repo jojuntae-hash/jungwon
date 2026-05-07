@@ -18,66 +18,65 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      {/* Left: Logo (Removed per request, kept empty div for centering) */}
-      <div className={styles.logoSpacer}></div>
-
-      {/* Center: Navigation */}
-      <nav className={styles.nav}>
-        {navItems.map((item) => {
-          const isActive = pathname === item.path;
-          return (
-            <Link 
-              key={item.name} 
-              href={item.path}
-              className={styles.navLink}
-              style={{
-                fontWeight: isActive ? '700' : '500',
-                color: isActive ? 'var(--primary-color)' : 'var(--text-color)',
-                opacity: isActive ? 1 : 0.6,
-              }}
-            >
-              {item.name}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Right: User Icon */}
-      <div>
-        {loading ? (
-          <div style={{ width: '32px', height: '32px' }}></div>
-        ) : user ? (
-          <div className={styles.userIconContainer}>
-            <button 
-              onClick={signOut}
-              title="로그아웃"
-              className={styles.profileBtn}
-              style={{ color: '#FF4D4D', borderColor: '#FF4D4D' }}
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                <polyline points="16 17 21 12 16 7"></polyline>
-                <line x1="21" y1="12" x2="9" y2="12"></line>
-              </svg>
-              <span className={styles.btnText}>로그아웃</span>
-            </button>
+      <div className={styles.headerContainer}>
+        {/* Left: Logo (Card Style) */}
+        <Link href="/" style={{ textDecoration: 'none' }}>
+          <div className={styles.logoCard}>
+            Garden
           </div>
-        ) : (
-          <Link href="/auth/login" style={{ textDecoration: 'none' }}>
-            <button 
-              className={styles.profileBtn}
-              title="로그인"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                <polyline points="10 17 15 12 10 7"></polyline>
-                <line x1="15" y1="12" x2="3" y2="12"></line>
-              </svg>
-              <span className={styles.btnText}>로그인</span>
-            </button>
-          </Link>
-        )
-}
+        </Link>
+
+        {/* Center/Right: Navigation & Auth */}
+        <div className={styles.navAndAuth}>
+          <nav className={styles.nav}>
+            {navItems.map((item) => {
+              const isActive = pathname === item.path;
+              return (
+                <Link 
+                  key={item.name} 
+                  href={item.path}
+                  className={`${styles.navCard} ${isActive ? styles.navCardActive : ''}`}
+                >
+                  {item.name}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className={styles.authSection}>
+            {loading ? (
+              <div style={{ width: '40px' }}></div>
+            ) : user ? (
+              <button 
+                onClick={signOut}
+                className={styles.authCard}
+                style={{ color: '#E6A8A8' }}
+                title="로그아웃"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                  <polyline points="16 17 21 12 16 7"></polyline>
+                  <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
+                <span className={styles.authText}>로그아웃</span>
+              </button>
+            ) : (
+              <Link href="/auth/login" style={{ textDecoration: 'none' }}>
+                <button 
+                  className={styles.authCard}
+                  title="로그인"
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                    <polyline points="10 17 15 12 10 7"></polyline>
+                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                  </svg>
+                  <span className={styles.authText}>로그인</span>
+                </button>
+              </Link>
+            )}
+          </div>
+        </div>
       </div>
     </header>
   );

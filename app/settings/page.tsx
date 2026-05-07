@@ -69,9 +69,14 @@ export default function SettingsPage() {
   const [bannerImage, setBannerImage] = useState('/images/hero_banner.png');
   const [bannerFile, setBannerFile] = useState<File | null>(null);
   
-  const [albumFont, setAlbumFont] = useState('Inter');
   const [albumFontSize, setAlbumFontSize] = useState(18);
   const [albumAlign, setAlbumAlign] = useState('left');
+  const [showAlbumTitle, setShowAlbumTitle] = useState(true);
+
+  const [homeAlbumFontSize, setHomeAlbumFontSize] = useState(20);
+  const [homeAlbumAlign, setHomeAlbumAlign] = useState('left');
+  const [homeShowAlbumTitle, setHomeShowAlbumTitle] = useState(true);
+
   const [showBanner, setShowBanner] = useState(true);
 
   // New: Post selection state
@@ -104,9 +109,14 @@ export default function SettingsPage() {
           setBannerPos(data.banner_pos || 'left');
           setBannerFontSize(data.banner_font_size || 48);
           setBannerImage(data.banner_image_url || '/images/hero_banner.png');
-          setAlbumFont(data.album_font || 'Inter');
           setAlbumFontSize(data.album_font_size || 18);
           setAlbumAlign(data.album_align || 'left');
+          setShowAlbumTitle(data.show_album_title ?? true);
+          
+          setHomeAlbumFontSize(data.home_album_font_size || 20);
+          setHomeAlbumAlign(data.home_album_align || 'left');
+          setHomeShowAlbumTitle(data.home_show_album_title ?? true);
+
           setSelectedHomePosts(data.selected_home_posts || []);
           setShowBanner(data.show_banner ?? true);
         }
@@ -181,9 +191,12 @@ export default function SettingsPage() {
         banner_pos: bannerPos,
         banner_font_size: bannerFontSize,
         banner_image_url: finalBannerUrl,
-        album_font: albumFont,
         album_font_size: albumFontSize,
         album_align: albumAlign,
+        show_album_title: showAlbumTitle,
+        home_album_font_size: homeAlbumFontSize,
+        home_album_align: homeAlbumAlign,
+        home_show_album_title: homeShowAlbumTitle,
         selected_home_posts: selectedHomePosts.filter(id => allPosts.some(p => p.id === id)),
         show_banner: showBanner,
         updated_at: new Date().toISOString(),
@@ -422,78 +435,91 @@ export default function SettingsPage() {
             </div>
           </section>
 
-          {/* 2. 배너 텍스트 설정 */}
+          {/* 2. 홈 앨범 카드 설정 */}
           <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <span className={styles.sectionIcon}><TextIcon /></span>
-              <h2 className={styles.sectionTitle}>배너 텍스트 설정</h2>
+            <div className={styles.sectionHeader} style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className={styles.sectionIcon}><AlbumIcon /></span>
+                <h2 className={styles.sectionTitle}>홈 앨범 카드 설정</h2>
+              </div>
+              <div className={styles.toggleWrapper}>
+                <label className={styles.label} style={{ marginBottom: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={homeShowAlbumTitle}
+                    onChange={(e) => setHomeShowAlbumTitle(e.target.checked)}
+                    className={styles.checkbox}
+                  />
+                  제목 노출
+                </label>
+              </div>
             </div>
             
             <div className={styles.grid}>
               <div className={styles.formGroup}>
-                <label className={styles.label}>배너 제목</label>
-                <input 
-                  type="text" 
-                  className={styles.input} 
-                  value={bannerText}
-                  onChange={(e) => setBannerText(e.target.value)}
-                  placeholder="배너에 표시할 문구를 입력하세요"
-                />
-              </div>
-              
-              <div className={styles.formGroup}>
-                <label className={styles.label}>텍스트 위치</label>
-                <select 
-                  className={styles.select}
-                  value={bannerPos}
-                  onChange={(e) => setBannerPos(e.target.value)}
-                >
-                  <option value="left">좌측</option>
-                  <option value="center">중앙</option>
-                  <option value="right">우측</option>
-                </select>
+                <label className={styles.label}>텍스트 정렬</label>
+                <div className={styles.segmentedControl}>
+                  <button 
+                    className={`${styles.segment} ${homeAlbumAlign === 'left' ? styles.segmentActive : ''}`}
+                    onClick={() => setHomeAlbumAlign('left')}
+                  >
+                    <AlignLeft /> 좌측
+                  </button>
+                  <button 
+                    className={`${styles.segment} ${homeAlbumAlign === 'center' ? styles.segmentActive : ''}`}
+                    onClick={() => setHomeAlbumAlign('center')}
+                  >
+                    <AlignCenter /> 중앙
+                  </button>
+                  <button 
+                    className={`${styles.segment} ${homeAlbumAlign === 'right' ? styles.segmentActive : ''}`}
+                    onClick={() => setHomeAlbumAlign('right')}
+                  >
+                    <AlignRight /> 우측
+                  </button>
+                </div>
               </div>
             </div>
             
             <div className={styles.formGroup} style={{ marginTop: '20px' }}>
               <div className={styles.sliderHeader}>
-                <label className={styles.label}>글꼴 크기</label>
-                <span className={styles.sliderValue}>{bannerFontSize}px</span>
+                <label className={styles.label}>카드 제목 크기</label>
+                <span className={styles.sliderValue}>{homeAlbumFontSize}px</span>
               </div>
               <div className={styles.sliderWrapper}>
                 <input 
                   type="range" 
-                  min="24" 
-                  max="72" 
+                  min="10" 
+                  max="32" 
                   className={styles.slider}
-                  value={bannerFontSize}
-                  onChange={(e) => setBannerFontSize(parseInt(e.target.value))}
+                  value={homeAlbumFontSize}
+                  onChange={(e) => setHomeAlbumFontSize(parseInt(e.target.value))}
                 />
               </div>
             </div>
           </section>
 
-          {/* 3. 앨범 카드 제목 설정 */}
+          {/* 3. 앨범 목록 카드 설정 */}
           <section className={styles.section}>
-            <div className={styles.sectionHeader}>
-              <span className={styles.sectionIcon}><AlbumIcon /></span>
-              <h2 className={styles.sectionTitle}>앨범 카드 제목 설정</h2>
+            <div className={styles.sectionHeader} style={{ justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span className={styles.sectionIcon}><AlbumIcon /></span>
+                <h2 className={styles.sectionTitle}>앨범 목록 카드 설정</h2>
+              </div>
+              <div className={styles.toggleWrapper}>
+                <label className={styles.label} style={{ marginBottom: 0, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={showAlbumTitle}
+                    onChange={(e) => setShowAlbumTitle(e.target.checked)}
+                    className={styles.checkbox}
+                  />
+                  제목 노출
+                </label>
+              </div>
             </div>
             
             <div className={styles.grid}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>글꼴 종류</label>
-                <select 
-                  className={styles.select}
-                  value={albumFont}
-                  onChange={(e) => setAlbumFont(e.target.value)}
-                >
-                  <option value="Inter">기본 글꼴 (Inter)</option>
-                  <option value="Noto Sans KR">Noto Sans KR</option>
-                  <option value="Roboto">Roboto</option>
-                </select>
-              </div>
-              
               <div className={styles.formGroup}>
                 <label className={styles.label}>텍스트 정렬</label>
                 <div className={styles.segmentedControl}>
@@ -527,7 +553,7 @@ export default function SettingsPage() {
               <div className={styles.sliderWrapper}>
                 <input 
                   type="range" 
-                  min="14" 
+                  min="10" 
                   max="32" 
                   className={styles.slider}
                   value={albumFontSize}

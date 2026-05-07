@@ -10,13 +10,14 @@ import { useAuth } from '@/lib/hooks/useAuth';
 import styles from './post.module.css';
 
 export default function PostDetail() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const params = useParams();
   const router = useRouter();
   const id = params?.id as string;
   
   const [post, setPost] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLiked, setIsLiked] = useState(false);
 
   useEffect(() => {
     if (!id) return;
@@ -39,28 +40,49 @@ export default function PostDetail() {
     };
     
     fetchPost();
-  }, [id]);
+    
+    // Check if liked by current user
+    const checkLike = async () => {
+      if (user && id) {
+        const { data, error } = await supabase
+          .from('post_likes')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('post_id', id)
+          .single();
+        
+        if (!error && data) {
+          setIsLiked(true);
+        }
+      }
+    };
+    checkLike();
+  }, [id, user]);
 
   const handleToggleFavorite = async () => {
-    if (!post) return;
+    if (!user || !id) {
+      alert('좋아요를 하시려면 로그인이 필요합니다.');
+      return;
+    }
 
-    const currentStatus = post.is_favorite || false;
-    const newStatus = !currentStatus;
-
-    // Update local state
-    setPost({ ...post, is_favorite: newStatus });
+    const nextStatus = !isLiked;
+    setIsLiked(nextStatus);
 
     try {
-      const { error } = await supabase
-        .from('posts')
-        .update({ is_favorite: newStatus })
-        .eq('id', id);
-
-      if (error) throw error;
+      if (nextStatus) {
+        await supabase
+          .from('post_likes')
+          .insert({ user_id: user.id, post_id: id });
+      } else {
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('post_id', id);
+      }
     } catch (err) {
       console.error('Error updating favorite status:', err);
-      // Revert local state
-      setPost({ ...post, is_favorite: currentStatus });
+      setIsLiked(!nextStatus);
       alert('좋아요 상태를 변경하는 중 오류가 발생했습니다.');
     }
   };
@@ -69,36 +91,34 @@ export default function PostDetail() {
     if (!window.confirm('정말로 이 기록을 삭제하시겠습니까?')) return;
 
     try {
-      // 1. First, try to delete with a count check
-      const { error, count } = await supabase
+      // Check permission first
+      const { data: postData, error: fetchError } = await supabase
         .from('posts')
-        .delete({ count: 'exact' })
+        .select('user_id')
+        .eq('id', id)
+        .single();
+
+      if (fetchError || !postData) {
+        alert('이미 삭제된 게시글이거나 찾을 수 없습니다.');
+        router.push('/album');
+        return;
+      }
+
+      // Allow if owner OR admin
+      const isOwner = user && postData.user_id === user.id;
+      const canDelete = isOwner || isAdmin;
+
+      if (!canDelete) {
+        alert('본인이 작성한 글만 삭제할 수 있습니다.');
+        return;
+      }
+
+      const { error } = await supabase
+        .from('posts')
+        .delete()
         .eq('id', id);
 
       if (error) throw error;
-
-      // If count is 0, it might be due to RLS or the record already being gone
-      if (count === 0) {
-        // Double check if the post exists and who owns it
-        const { data: checkData } = await supabase
-          .from('posts')
-          .select('user_id')
-          .eq('id', id)
-          .single();
-
-        if (!checkData) {
-          alert('이미 삭제된 게시글이거나 찾을 수 없습니다.');
-          router.push('/album');
-          return;
-        }
-
-        if (checkData.user_id !== user?.id) {
-          alert('본인이 작성한 글만 삭제할 수 있습니다.');
-        } else {
-          alert('삭제 권한이 없거나 오류가 발생했습니다. 관리자에게 문의하세요.');
-        }
-        return;
-      }
 
       alert('성공적으로 삭제되었습니다.');
       router.push('/album');
@@ -131,11 +151,11 @@ export default function PostDetail() {
         
         <div className={styles.headerRight}>
           <button 
-            className={`${styles.heartBtn} ${post.is_favorite ? styles.heartBtnActive : ''}`}
+            className={`${styles.heartBtn} ${isLiked ? styles.heartBtnActive : ''}`}
             onClick={handleToggleFavorite}
-            title={post.is_favorite ? "좋아요 취소" : "좋아요"}
+            title={isLiked ? "좋아요 취소" : "좋아요"}
           >
-            <svg width="22" height="22" viewBox="0 0 24 24" fill={post.is_favorite ? "#E6A8A8" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill={isLiked ? "#E6A8A8" : "none"} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
           </button>

@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
+import { fontOptions } from '@/lib/fonts';
 import styles from './page.module.css';
 
 export default function Home() {
@@ -18,9 +19,10 @@ export default function Home() {
     bannerPos: 'left',
     bannerFontSize: 48,
     bannerImage: '/images/hero_banner.png',
-    albumFont: 'Inter',
+    albumFont: "'Noto Sans KR', sans-serif",
     albumFontSize: 20,
     albumAlign: 'left',
+    showAlbumTitle: true,
     showBanner: true,
   });
 
@@ -44,9 +46,10 @@ export default function Home() {
             bannerPos: settingsData.banner_pos || 'left',
             bannerFontSize: settingsData.banner_font_size || 48,
             bannerImage: settingsData.banner_image_url || '/images/hero_banner.png',
-            albumFont: settingsData.album_font || 'Inter',
-            albumFontSize: settingsData.album_font_size || 20,
-            albumAlign: settingsData.album_align || 'left',
+            albumFont: fontOptions.find(f => f.id === settingsData.home_album_font || f.family === settingsData.home_album_font)?.family || "'Noto Sans KR', sans-serif",
+            albumFontSize: settingsData.home_album_font_size || 20,
+            albumAlign: settingsData.home_album_align || 'left',
+            showAlbumTitle: settingsData.home_show_album_title ?? true,
             showBanner: settingsData.show_banner ?? true,
           };
           setSettings(currentSettings);
@@ -118,30 +121,8 @@ export default function Home() {
             className={styles.heroBanner} 
             style={{ 
               backgroundImage: `url(${settings.bannerImage})`,
-              justifyContent: bannerAlignProps.justifyContent 
             }}
           >
-            {settings.bannerText && settings.bannerText.trim() !== '' && (
-              <>
-                <div className={styles.heroOverlay} />
-                <div 
-                  className={styles.heroContent}
-                  style={{ 
-                    left: settings.bannerPos === 'left' ? '0' : 'auto',
-                    right: settings.bannerPos === 'right' ? '0' : 'auto',
-                    width: settings.bannerPos === 'center' ? '100%' : 'auto',
-                    textAlign: bannerAlignProps.textAlign
-                  }}
-                >
-                  <h1 
-                    className={styles.heroTitle}
-                    style={{ fontSize: `${settings.bannerFontSize}px` }}
-                  >
-                    {settings.bannerText}
-                  </h1>
-                </div>
-              </>
-            )}
           </section>
         )}
 
@@ -156,31 +137,33 @@ export default function Home() {
               return (
                 <Link key={card.id} href={`/post/${card.id}`} style={{ textDecoration: 'none' }}>
                   <div className={styles.card}>
-                    {card.thumbnail_url ? (
-                      <img src={card.thumbnail_url} alt={card.title} className={styles.cardImage} />
-                    ) : (
-                      <div className={`${styles.cardImage} ${styles.cardPlaceholder}`}>
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.8 }}>
-                          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-                        </svg>
+                    <div className={styles.imageContainer}>
+                      {card.thumbnail_url ? (
+                        <img src={card.thumbnail_url} alt={card.title} className={styles.cardImage} />
+                      ) : (
+                        <div className={`${styles.cardImage} ${styles.cardPlaceholder}`}>
+                          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.8 }}>
+                            <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+                          </svg>
+                        </div>
+                      )}
+                    </div>
+
+                    {settings.showAlbumTitle && (
+                      <div 
+                        className={styles.cardInfo}
+                        style={{ 
+                          '--album-font-size': `${settings.albumFontSize}px`,
+                          '--album-align': settings.albumAlign,
+                          justifyContent: albumAlignProps.justifyContent,
+                          textAlign: albumAlignProps.textAlign
+                        } as any}
+                      >
+                        <span className={styles.cardTitle}>
+                          {card.title}
+                        </span>
                       </div>
                     )}
-
-                    <div 
-                      className={styles.cardOverlay}
-                      style={{ justifyContent: albumAlignProps.justifyContent }}
-                    >
-                      <span 
-                        className={styles.cardTitle}
-                        style={{ 
-                          fontFamily: settings.albumFont,
-                          fontSize: `${settings.albumFontSize}px`,
-                          textAlign: albumAlignProps.textAlign
-                        }}
-                      >
-                        {card.title}
-                      </span>
-                    </div>
                   </div>
                 </Link>
               );

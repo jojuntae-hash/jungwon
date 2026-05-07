@@ -283,7 +283,23 @@ export default function RecordPage() {
                   }}
                   onMouseUp={() => setIsDragging(false)}
                   onMouseLeave={() => setIsDragging(false)}
-                  style={{ cursor: showPreview ? 'move' : 'default' }}
+                  onTouchStart={(e) => {
+                    if (!showPreview) return;
+                    setIsDragging(true);
+                    setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+                  }}
+                  onTouchMove={(e) => {
+                    if (!isDragging || !showPreview) return;
+                    const dx = ((e.touches[0].clientX - dragStart.x) / 300) * 100;
+                    const dy = ((e.touches[0].clientY - dragStart.y) / 225) * 100;
+                    setPosition(prev => ({
+                      x: Math.max(0, Math.min(100, prev.x - dx / zoom)),
+                      y: Math.max(0, Math.min(100, prev.y - dy / zoom))
+                    }));
+                    setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+                  }}
+                  onTouchEnd={() => setIsDragging(false)}
+                  style={{ cursor: showPreview ? 'move' : 'default', touchAction: 'none' }}
                 >
                   {showPreview ? (
                     <div 
@@ -422,7 +438,23 @@ export default function RecordPage() {
                 }}
                 onMouseUp={() => setIsDragging(false)}
                 onMouseLeave={() => setIsDragging(false)}
-                style={{ cursor: showPreview ? 'move' : 'default' }}
+                onTouchStart={(e) => {
+                  if (!showPreview) return;
+                  setIsDragging(true);
+                  setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+                }}
+                onTouchMove={(e) => {
+                  if (!isDragging || !showPreview) return;
+                  const dx = ((e.touches[0].clientX - dragStart.x) / 300) * 100;
+                  const dy = ((e.touches[0].clientY - dragStart.y) / 225) * 100;
+                  setPosition(prev => ({
+                    x: Math.max(0, Math.min(100, prev.x - dx / zoom)),
+                    y: Math.max(0, Math.min(100, prev.y - dy / zoom))
+                  }));
+                  setDragStart({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+                }}
+                onTouchEnd={() => setIsDragging(false)}
+                style={{ cursor: showPreview ? 'move' : 'default', touchAction: 'none' }}
               >
                 {showPreview ? (
                   <div 

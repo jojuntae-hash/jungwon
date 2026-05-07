@@ -6,15 +6,18 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Header from '@/app/components/Header';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/lib/hooks/useAuth';
+import { fontOptions } from '@/lib/fonts';
 import styles from './page.module.css';
 
 export default function AlbumPage() {
   const [posts, setPosts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [settings, setSettings] = useState({
-    albumFont: 'Inter',
+    albumFont: "'Noto Sans KR', sans-serif",
     albumFontSize: 18,
     albumAlign: 'center',
+    showAlbumTitle: true,
   });
   const [sortBy, setSortBy] = useState('latest');
   const [searchQuery, setSearchQuery] = useState('');
@@ -33,9 +36,10 @@ export default function AlbumPage() {
 
         if (data && !error) {
           setSettings({
-            albumFont: data.album_font || 'Inter',
+            albumFont: fontOptions.find(f => f.id === data.album_font || f.family === data.album_font)?.family || "'Noto Sans KR', sans-serif",
             albumFontSize: data.album_font_size || 18,
             albumAlign: data.album_align || 'center',
+            showAlbumTitle: data.show_album_title ?? true,
           });
         }
       } catch (err) {
@@ -68,6 +72,26 @@ export default function AlbumPage() {
     fetchPosts();
   }, []);
 
+  // Fetch personal likes if user is logged in
+  const [userLikes, setUserLikes] = useState<string[]>([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      const fetchLikes = async () => {
+        const { data, error } = await supabase
+          .from('post_likes')
+          .select('post_id')
+          .eq('user_id', user.id);
+        
+        if (!error && data) {
+          setUserLikes(data.map(l => l.post_id));
+        }
+      };
+      fetchLikes();
+    }
+  }, [user]);
+
   const getAlignmentProps = (align: string) => {
     switch (align) {
       case 'center': return { justifyContent: 'center', textAlign: 'center' as const };
@@ -94,36 +118,44 @@ export default function AlbumPage() {
     }
   };
 
-  const handleToggleFavorite = async (e: React.MouseEvent, postId: string, currentStatus: boolean) => {
+  const handleToggleFavorite = async (e: React.MouseEvent, postId: string) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const newStatus = !currentStatus;
+    if (!user) {
+      alert('좋아요를 하시려면 로그인이 필요합니다.');
+      return;
+    }
 
-    // Update local state immediately for better UX
-    setPosts(prevPosts => 
-      prevPosts.map(post => 
-        post.id === postId ? { ...post, is_favorite: newStatus } : post
-      )
-    );
+    const isLiked = userLikes.includes(postId);
+
+    // Update local state
+    if (isLiked) {
+      setUserLikes(prev => prev.filter(id => id !== postId));
+    } else {
+      setUserLikes(prev => [...prev, postId]);
+    }
 
     try {
-      const { error } = await supabase
-        .from('posts')
-        .update({ is_favorite: newStatus })
-        .eq('id', postId);
-
-      if (error) {
-        throw error;
+      if (isLiked) {
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('post_id', postId);
+      } else {
+        await supabase
+          .from('post_likes')
+          .insert({ user_id: user.id, post_id: postId });
       }
     } catch (err) {
       console.error('Error updating favorite status:', err);
-      // Revert local state if update fails
-      setPosts(prevPosts => 
-        prevPosts.map(post => 
-          post.id === postId ? { ...post, is_favorite: currentStatus } : post
-        )
-      );
+      // Revert local state
+      if (isLiked) {
+        setUserLikes(prev => [...prev, postId]);
+      } else {
+        setUserLikes(prev => prev.filter(id => id !== postId));
+      }
       alert('좋아요 상태를 변경하는 중 오류가 발생했습니다.');
     }
   };
@@ -138,7 +170,7 @@ export default function AlbumPage() {
       ? post.tags.some((tag: string) => tag.toLowerCase().includes(query))
       : false;
     
-    const favoriteMatch = !onlyFavorites || post.is_favorite === true;
+    const favoriteMatch = !onlyFavorites || userLikes.includes(post.id);
     
     return (titleMatch || tagsMatch) && favoriteMatch;
   });
@@ -213,10 +245,6 @@ export default function AlbumPage() {
             {/* 1. Post Cards */}
             {filteredPosts.map((post) => (
               <Link key={post.id} href={`/post/${post.id}`} className={styles.card}>
-                <div className={styles.dateLabel}>
-                  {new Date(post.created_at).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '.').replace(/\.$/, '')}
-                </div>
-                
                 <div className={styles.cardImageWrapper}>
                   {post.thumbnail_url ? (
                     <img src={post.thumbnail_url} alt={post.title} className={styles.cardImage} />
@@ -231,20 +259,23 @@ export default function AlbumPage() {
                 
                 <div className={styles.cardContent}>
                   <div className={styles.titleRow}>
-                    <h3 
-                      className={styles.cardTitle}
-                      style={{ 
-                        fontFamily: settings.albumFont,
-                        fontSize: `${settings.albumFontSize}px`,
-                      }}
-                    >
-                      {post.title}
-                    </h3>
+                    {settings.showAlbumTitle && (
+                      <h3 
+                        className={styles.cardTitle}
+                        style={{ 
+                          '--album-font-size': `${settings.albumFontSize}px`,
+                          textAlign: albumAlignProps.textAlign as any,
+                          flex: 1
+                        } as any}
+                      >
+                        {post.title}
+                      </h3>
+                    )}
                     <div 
                       className={styles.heartBtn}
-                      onClick={(e) => handleToggleFavorite(e, post.id, post.is_favorite)}
+                      onClick={(e) => handleToggleFavorite(e, post.id)}
                     >
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill={post.is_favorite ? "#E6A8A8" : "none"} stroke={post.is_favorite ? "#E6A8A8" : "#D0CCD3"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill={userLikes.includes(post.id) ? "#E6A8A8" : "none"} stroke={userLikes.includes(post.id) ? "#E6A8A8" : "#D0CCD3"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
                       </svg>
                     </div>
@@ -255,10 +286,6 @@ export default function AlbumPage() {
                       <span key={i} className={styles.tagItem}>#{tag}</span>
                     ))}
                   </div>
-
-                  <p className={styles.cardSnippet}>
-                    {post.content ? (post.content.length > 60 ? post.content.substring(0, 60) + '...' : post.content) : '기록된 내용이 없습니다.'}
-                  </p>
                 </div>
               </Link>
             ))}

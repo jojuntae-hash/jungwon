@@ -5,14 +5,14 @@ export interface FontOption {
 }
 
 export const fontOptions: FontOption[] = [
-  { id: 'noto-sans', name: 'Noto Sans KR (깔끔)', family: "'Noto Sans KR', sans-serif" },
-  { id: 'gowun-batang', name: '고운 바탕 (서정적)', family: "'Gowun Batang', serif" },
+  { id: 'noto-sans', name: 'Noto Sans KR (깔끔함)', family: "'Noto Sans KR', sans-serif" },
+  { id: 'pretendard', name: '프리텐다드 (트렌디)', family: '"Pretendard", -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif' },
+  { id: 'ibm-plex', name: 'IBM Plex Sans KR (전문적)', family: "'IBM Plex Sans KR', sans-serif" },
+  { id: 'nanum-myeongjo', name: '나눔명조 (우아함)', family: "'Nanum Myeongjo', serif" },
+  { id: 'noto-serif', name: '본명조 (클래식)', family: "'Noto Serif KR', serif" },
+  { id: 'jua', name: '주아 (감각적/둥글)', family: "'Jua', sans-serif" },
+  { id: 'do-hyeon', name: '도현 (현대적/강렬)', family: "'Do Hyeon', sans-serif" },
   { id: 'gowun-dodum', name: '고운 돋움 (따뜻함)', family: "'Gowun Dodum', sans-serif" },
-  { id: 'nanum-myeongjo', name: '나눔 명조 (우아함)', family: "'Nanum Myeongjo', serif" },
-  { id: 'nanum-pen', name: '나눔 펜 (손글씨)', family: "'Nanum Pen Script', cursive" },
   { id: 'gamja-flower', name: '감자 꽃 (동화)', family: "'Gamja Flower', cursive" },
-  { id: 'hi-melody', name: 'Hi Melody (발랄)', family: "'Hi Melody', cursive" },
-  { id: 'song-myung', name: '송명 (클래식)', family: "'Song Myung', serif" },
   { id: 'single-day', name: 'Single Day (모던 손글씨)', family: "'Single Day', cursive" },
-  { id: 'inter', name: 'Inter (영문 세련)', family: "'Inter', sans-serif" },
 ];
