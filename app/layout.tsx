@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "정원의 정원",
   description: "아이의 모든 순간이 꽃피는 곳",
+  icons: {
+    icon: '/favicon.png',
+  },
 };
 
 import ThemeProvider from "./components/ThemeProvider";
