@@ -25,49 +25,61 @@ export default function EditPage() {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
   
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, loading: authLoading } = useAuth();
   const router = useRouter();
 
   // Show preview if image is selected or fetched
   const showPreview = thumbnailPreview !== '';
 
+  // 1. Redirect if not logged in
   useEffect(() => {
-    if (!id) return;
+    if (!authLoading && !user) {
+      alert("로그인이 필요한 서비스입니다.");
+      router.push('/auth/login');
+    }
+  }, [user, authLoading, router]);
+
+  // 2. Fetch post data
+  useEffect(() => {
+    if (!id || !user) return;
     
     const fetchPost = async () => {
-      const { data, error } = await supabase
-        .from('posts')
-        .select('*')
-        .eq('id', id)
-        .single();
-        
-      if (data) {
-        // Allow author OR admin
-        const isOwner = user && data.user_id === user.id;
-        if (user && !isOwner && !isAdmin) {
-          alert("수정 권한이 없습니다.");
+      try {
+        const { data, error } = await supabase
+          .from('posts')
+          .select('*')
+          .eq('id', id)
+          .single();
+          
+        if (data) {
+          // Allow author OR admin
+          const isOwner = user && data.user_id === user.id;
+          if (!isOwner && !isAdmin) {
+            alert("수정 권한이 없습니다.");
+            router.push('/');
+            return;
+          }
+          
+          setTitle(data.title || '');
+          setLink(data.google_photos_link || '');
+          setContent(data.content || '');
+          setTags(data.tags || []);
+          if (data.thumbnail_url) {
+            setThumbnailPreview(data.thumbnail_url);
+          }
+        } else if (error) {
+          console.error("Error fetching post:", error);
+          alert("글을 불러오지 못했습니다.");
           router.push('/');
-          return;
         }
-        
-        setTitle(data.title || '');
-        setLink(data.google_photos_link || '');
-        setContent(data.content || '');
-        setTags(data.tags || []);
-        if (data.thumbnail_url) {
-          setThumbnailPreview(data.thumbnail_url);
-        }
-      } else if (error) {
-        console.error("Error fetching post:", error);
-        alert("글을 불러오지 못했습니다.");
-        router.push('/');
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     
-    if (user) {
-      fetchPost();
-    }
+    fetchPost();
   }, [id, user, isAdmin, router]);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
