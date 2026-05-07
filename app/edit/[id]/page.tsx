@@ -25,7 +25,7 @@ export default function EditPage() {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>('');
   
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const router = useRouter();
 
   // Show preview if image is selected or fetched
@@ -42,16 +42,17 @@ export default function EditPage() {
         .single();
         
       if (data) {
-        // Only allow author to edit (rudimentary check, RLS should handle real security)
-        if (user && data.user_id !== user.id) {
+        // Allow author OR admin
+        const isOwner = user && data.user_id === user.id;
+        if (user && !isOwner && !isAdmin) {
           alert("수정 권한이 없습니다.");
           router.push('/');
           return;
         }
         
-        setTitle(data.title);
+        setTitle(data.title || '');
         setLink(data.google_photos_link || '');
-        setContent(data.content);
+        setContent(data.content || '');
         setTags(data.tags || []);
         if (data.thumbnail_url) {
           setThumbnailPreview(data.thumbnail_url);
@@ -66,13 +67,8 @@ export default function EditPage() {
     
     if (user) {
       fetchPost();
-    } else {
-      // If user auth state isn't loaded yet, wait.
-      // In a real app we might watch `user` and only fetch when it's ready.
-      // For now, let's just fetch if user is loaded. 
-      // If user is null but still loading, this might fail, so we'll wait for user.
     }
-  }, [id, user, router]);
+  }, [id, user, isAdmin, router]);
 
   const handleAddTag = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter' && newTag.trim() !== '') {
@@ -88,8 +84,8 @@ export default function EditPage() {
   };
 
   const handlePublish = async () => {
-    if (!title.trim() || !content.trim()) {
-      alert("제목과 내용을 입력해주세요.");
+    if (!title.trim()) {
+      alert("제목을 입력해주세요.");
       return;
     }
 
@@ -144,13 +140,14 @@ export default function EditPage() {
         console.error("Error updating post:", error);
         alert(`수정 중 오류가 발생했습니다: ${error.message}`);
       } else if (data && data.length === 0) {
-        alert("수정 권한이 없거나 데이터베이스(Supabase) 보안 정책(UPDATE Policy)이 설정되지 않아 수정이 반영되지 않았습니다. (SQL Editor에서 정책을 추가해주세요)");
+        alert("수정 권한이 없거나 데이터베이스 보안 정책이 설정되지 않았습니다.");
       } else {
         alert("성공적으로 수정되었습니다!");
         router.push(`/post/${id}`);
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      alert("처리 중 예기치 못한 오류가 발생했습니다: " + err.message);
     } finally {
       setIsPublishing(false);
     }

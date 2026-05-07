@@ -574,25 +574,30 @@ export default function SettingsPage() {
               홈 화면의 4x2 그리드에 노출될 앨범을 선택해 주세요. (최대 8개)
             </p>
 
-            <div className={styles.postList}>
-              {isPostsLoading ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#8C8C8C' }}>로딩 중...</div>
-              ) : allPosts.length === 0 ? (
-                <div style={{ padding: '20px', textAlign: 'center', color: '#8C8C8C' }}>작성된 글이 없습니다.</div>
-              ) : (
-                allPosts.map((post) => {
-                  const isSelected = selectedHomePosts.includes(post.id);
-                  return (
-                    <div 
-                      key={post.id} 
-                      className={`${styles.postItem} ${isSelected ? styles.postItemActive : ''}`}
-                      onClick={() => togglePostSelection(post.id)}
-                    >
-                      <span className={styles.postText}>{post.title}</span>
-                    </div>
-                  );
-                })
-              )}
+            <div className={styles.postListWrapper}>
+              <div className={styles.postList}>
+                {isPostsLoading ? (
+                  <div style={{ padding: '40px', textAlign: 'center', gridColumn: 'span 3', color: '#8C8C8C' }}>로딩 중...</div>
+                ) : allPosts.length === 0 ? (
+                  <div style={{ padding: '40px', textAlign: 'center', gridColumn: 'span 3', color: '#8C8C8C' }}>작성된 글이 없습니다.</div>
+                ) : (
+                  allPosts.map((post) => {
+                    const isSelected = selectedHomePosts.includes(post.id);
+                    return (
+                      <div 
+                        key={post.id} 
+                        className={`${styles.postItem} ${isSelected ? styles.postItemActive : ''}`}
+                        onClick={() => togglePostSelection(post.id)}
+                      >
+                        <div className={styles.postCheckbox}>
+                          {isSelected && <span className={styles.postCheckIcon}>✓</span>}
+                        </div>
+                        <span className={styles.postText}>{post.title}</span>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
             </div>
             <div className={styles.selectionInfo}>
               선택됨: {selectedHomePosts.filter(id => allPosts.some(p => p.id === id)).length} / 8
