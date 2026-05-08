@@ -1,6 +1,6 @@
 .wrapper {
   min-height: 100vh;
-  background-color: #FAF9F6;
+  background-color: var(--bg-color);
 }
 
 .container {
@@ -18,7 +18,7 @@
 
 .title {
   font-size: 32px;
-  color: #4A3C59;
+  color: var(--text-color);
   margin-bottom: 8px;
 }
 
@@ -28,7 +28,7 @@
 }
 
 .addBtn {
-  background-color: #9D4EDD;
+  background-color: var(--primary-color);
   color: white;
   padding: 12px 24px;
   border-radius: 15px;
@@ -61,7 +61,7 @@
 }
 
 .searchInput:focus {
-  border-color: #9D4EDD;
+  border-color: var(--primary-color);
 }
 
 .countText {
@@ -70,7 +70,7 @@
 }
 
 .listContainer {
-  background-color: white;
+  background-color: var(--card-bg);
   border-radius: 25px;
   padding: 20px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.03);
@@ -115,7 +115,7 @@
   position: relative;
   border-radius: 12px;
   overflow: hidden;
-  background-color: #F5E6FF;
+  background-color: var(--secondary-color);
 }
 
 .placeholder {
@@ -133,10 +133,21 @@
   gap: 4px;
 }
 
+.postTitleLink {
+  text-decoration: none;
+  width: fit-content;
+}
+
 .postTitle {
   font-weight: 600;
-  color: #4A3C59;
+  color: var(--text-color);
   font-size: 16px;
+  transition: color 0.2s;
+}
+
+.postTitleLink:hover .postTitle {
+  color: var(--primary-color);
+  text-decoration: underline;
 }
 
 .linkBadge, .internalBadge {
@@ -175,12 +186,12 @@
 }
 
 .editBtn {
-  background-color: #F5E6FF;
-  color: #9D4EDD;
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
 }
 
 .editBtn:hover {
-  background-color: #9D4EDD;
+  background-color: var(--primary-color);
   color: white;
 }
 

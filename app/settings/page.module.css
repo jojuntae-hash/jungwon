@@ -47,6 +47,8 @@
 .sectionHeader {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   margin-bottom: 24px;
 }
@@ -63,6 +65,33 @@
   font-weight: 700;
   color: #4A3C59;
   margin: 0;
+  word-break: keep-all;
+}
+
+.sectionTitleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.toggleWrapper {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.integratedFontSetting {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: column;
+}
+
+.settingLabelSmall {
+  font-size: 15px;
+  font-weight: 700;
+  color: #4A3C59;
+  margin-bottom: 12px;
 }
 
 /* Theme Swatches */
@@ -349,6 +378,7 @@
   font-size: 15px;
   font-weight: 700;
   color: #4A3C59;
+  word-break: keep-all;
 }
 
 .sliderValue {

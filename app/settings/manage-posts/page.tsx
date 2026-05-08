@@ -114,7 +114,12 @@ export default function ManagePostsPage() {
                     </td>
                     <td>
                       <div className={styles.postInfo}>
-                        <span className={styles.postTitle}>{post.title}</span>
+                        <Link 
+                          href={`/post/${post.id}`}
+                          className={styles.postTitleLink}
+                        >
+                          <span className={styles.postTitle}>{post.title}</span>
+                        </Link>
                         {post.google_photos_link ? (
                           <span className={styles.linkBadge}>외부 링크 연결 중 🔗</span>
                         ) : (

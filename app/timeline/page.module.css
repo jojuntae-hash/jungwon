@@ -26,7 +26,7 @@
 
 .timeline {
   position: relative;
-  padding: 60px 0;
+  padding: 40px 0;
 }
 
 /* Organic Wavy Stem */
@@ -45,8 +45,8 @@
 .item {
   position: relative;
   width: 50%;
-  padding: 30px 60px;
-  margin-bottom: 60px;
+  padding: 20px 60px;
+  margin-bottom: 30px;
   opacity: 1;
 }
 
@@ -103,23 +103,6 @@
   position: relative;
   border: 2px solid rgba(129, 199, 132, 0.1);
 }
-
-/* Washi Tape on Card */
-.contentCard::after {
-  content: '';
-  position: absolute;
-  top: -12px;
-  width: 80px;
-  height: 28px;
-  background: rgba(255, 235, 238, 0.6);
-  backdrop-filter: blur(2px);
-  border: 1px solid rgba(0, 0, 0, 0.05);
-  box-shadow: 0 2px 5px rgba(0,0,0,0.02);
-  z-index: 2;
-}
-
-.left .contentCard::after { right: 40px; transform: rotate(2deg); }
-.right .contentCard::after { left: 40px; transform: rotate(-2deg); }
 
 .contentCard:hover {
   transform: translateY(-12px) scale(1.03);
@@ -189,7 +172,6 @@
   .left .cardBody {
     flex-direction: row;
   }
-  .left .contentCard::after { left: 40px; right: auto; transform: rotate(-2deg); }
 }
 
 .loadingContainer {
