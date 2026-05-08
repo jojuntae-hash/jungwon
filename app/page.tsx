@@ -26,13 +26,21 @@ export default async function Home() {
   let selectedIds: string[] = [];
 
   try {
-    // 1. Fetch Settings First (to get selected post IDs)
-    const { data: settingsData } = await supabase
-      .from('site_settings')
-      .select('banner_text, banner_pos, banner_font_size, banner_image_url, font_family, album_font_size, album_align, show_album_title, show_banner, selected_home_posts')
-      .eq('id', 'global')
-      .single();
+    // 1. Fetch Settings and Latest Posts in parallel for speed
+    const [settingsRes, latestPostsRes] = await Promise.all([
+      supabase
+        .from('site_settings')
+        .select('banner_text, banner_pos, banner_font_size, banner_image_url, font_family, album_font_size, album_align, show_album_title, show_banner, selected_home_posts')
+        .eq('id', 'global')
+        .single(),
+      supabase
+        .from('posts')
+        .select('id, title, thumbnail_url, google_photos_link, created_at')
+        .order('created_at', { ascending: false })
+        .limit(8)
+    ]);
 
+    const settingsData = settingsRes.data;
     if (settingsData) {
       settings = {
         bannerText: settingsData.banner_text ?? '조정원의 정원',
@@ -48,26 +56,22 @@ export default async function Home() {
       selectedIds = settingsData.selected_home_posts || [];
     }
 
-    // 2. Fetch Only Required Post Fields
-    let query = supabase
-      .from('posts')
-      .select('id, title, thumbnail_url, google_photos_link, created_at');
-
+    // 2. Determine posts to display
     if (selectedIds.length > 0) {
-      query = query.in('id', selectedIds);
-    } else {
-      query = query.order('created_at', { ascending: false }).limit(8);
-    }
-
-    const { data: postsData } = await query;
-    if (postsData) {
-      if (selectedIds.length > 0) {
+      // If specific posts are selected, fetch them (sequential but only if necessary)
+      const { data: postsData } = await supabase
+        .from('posts')
+        .select('id, title, thumbnail_url, google_photos_link, created_at')
+        .in('id', selectedIds);
+      
+      if (postsData) {
         posts = [...postsData].sort((a, b) => 
           selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id)
         );
-      } else {
-        posts = postsData;
       }
+    } else {
+      // Use the pre-fetched latest posts
+      posts = latestPostsRes.data || [];
     }
   } catch (err) {
     console.error('Error fetching data on server:', err);
