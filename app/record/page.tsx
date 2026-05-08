@@ -4,14 +4,14 @@ export const runtime = 'edge';
 
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase_new/client';
 import { useAuth } from '@/lib/hooks/useAuth';
-import Header from '@/app/components/Header';
 import styles from './record.module.css';
 
 export default function RecordPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
+  const supabase = createClient();
 
   // Form state
   const [title, setTitle] = useState('');
@@ -32,13 +32,6 @@ export default function RecordPage() {
 
   const [isPublishing, setIsPublishing] = useState(false);
   const [imageAspect, setImageAspect] = useState(1);
-
-  // 1. Authentication check
-  useEffect(() => {
-    if (!loading && !user) {
-      router.push('/auth/login');
-    }
-  }, [user, loading, router]);
 
   // Handle image upload
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +178,6 @@ export default function RecordPage() {
 
   return (
     <div style={{ backgroundColor: '#F9F8F6', minHeight: '100vh' }}>
-      <Header />
       <div className={styles.container}>
         {/* Left Panel: Inputs */}
         <div className={styles.leftPanel}>

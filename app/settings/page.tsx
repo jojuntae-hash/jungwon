@@ -5,7 +5,7 @@ export const runtime = 'edge';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase_new/client';
 import { useAuth } from '@/lib/hooks/useAuth';
 import { themes } from '@/lib/themes';
 import { fontOptions } from '@/lib/fonts';
@@ -47,18 +47,9 @@ const UploadIcon = () => (
 export default function SettingsPage() {
   const router = useRouter();
   const { user, loading, isAdmin } = useAuth();
+  const supabase = createClient();
   
-  // 1. Authentication check
-  useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push('/auth/login');
-      } else if (!isAdmin) {
-        alert('관리자만 접근 가능합니다.');
-        router.push('/');
-      }
-    }
-  }, [user, loading, isAdmin, router]);
+  // Authentication check is now handled by middleware.ts for better security.
 
   // Settings state
   const [selectedTheme, setSelectedTheme] = useState<string>('classic-garden');
