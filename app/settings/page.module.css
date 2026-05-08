@@ -642,3 +642,40 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Master Post Management Specialized Layout */
+.manageSectionWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
+.manageInfo {
+  flex: 1;
+}
+
+.manageInfo p {
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.manageActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 180px;
+}
+
+@media (max-width: 768px) {
+  .manageSectionWrapper {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+  }
+  
+  .manageActions {
+    min-width: 100%;
+  }
+}
+

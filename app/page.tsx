@@ -26,10 +26,10 @@ export default async function Home() {
   let selectedIds: string[] = [];
 
   try {
-    // Fetch Settings
+    // 1. Fetch Settings First (to get selected post IDs)
     const { data: settingsData } = await supabase
       .from('site_settings')
-      .select('*')
+      .select('banner_text, banner_pos, banner_font_size, banner_image_url, font_family, album_font_size, album_align, show_album_title, show_banner, selected_home_posts')
       .eq('id', 'global')
       .single();
 
@@ -48,22 +48,25 @@ export default async function Home() {
       selectedIds = settingsData.selected_home_posts || [];
     }
 
-    // Fetch Posts
-    let query = supabase.from('posts').select('*');
+    // 2. Fetch Only Required Post Fields
+    let query = supabase
+      .from('posts')
+      .select('id, title, thumbnail_url, google_photos_link, created_at');
+
     if (selectedIds.length > 0) {
       query = query.in('id', selectedIds);
     } else {
       query = query.order('created_at', { ascending: false }).limit(8);
     }
 
-    const { data } = await query;
-    if (data) {
+    const { data: postsData } = await query;
+    if (postsData) {
       if (selectedIds.length > 0) {
-        posts = [...data].sort((a, b) => 
+        posts = [...postsData].sort((a, b) => 
           selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id)
         );
       } else {
-        posts = data;
+        posts = postsData;
       }
     }
   } catch (err) {
@@ -99,6 +102,25 @@ export default async function Home() {
               className={styles.heroImage}
               style={{ objectFit: 'cover' }}
             />
+            {settings.bannerText && (
+              <div 
+                className={styles.bannerOverlay}
+                style={{ 
+                  justifyContent: settings.bannerPos === 'center' ? 'center' : settings.bannerPos === 'right' ? 'flex-end' : 'flex-start',
+                  textAlign: settings.bannerPos as any
+                }}
+              >
+                <h1 
+                  className={styles.bannerTitle}
+                  style={{ 
+                    fontSize: `${settings.bannerFontSize}px`,
+                    fontFamily: settings.albumFont
+                  }}
+                >
+                  {settings.bannerText}
+                </h1>
+              </div>
+            )}
           </section>
         )}
 
@@ -110,8 +132,16 @@ export default async function Home() {
                 return <div key={card.id} className={styles.emptyCard} />;
               }
 
+              const cardUrl = card.google_photos_link || `/post/${card.id}`;
+              const isExternal = !!card.google_photos_link;
+
               return (
-                <Link key={card.id} href={`/post/${card.id}`} style={{ textDecoration: 'none' }}>
+                <Link 
+                  key={card.id} 
+                  href={cardUrl} 
+                  target={isExternal ? "_blank" : "_self"}
+                  style={{ textDecoration: 'none' }}
+                >
                   <div className={styles.card}>
                     <div className={styles.imageContainer}>
                       {card.thumbnail_url ? (

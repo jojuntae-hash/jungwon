@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabase';
+import { createClient } from '@/lib/supabase_new/client';
 import { useAuth } from '@/lib/hooks/useAuth';
 import styles from './page.module.css';
 
@@ -18,14 +18,14 @@ interface AlbumClientProps {
 }
 
 export default function AlbumClient({ initialPosts, settings }: AlbumClientProps) {
-  const [posts, setPosts] = useState<any[]>(initialPosts);
-  const [isLoading, setIsLoading] = useState(false);
+  const [posts] = useState<any[]>(initialPosts);
   const [sortBy, setSortBy] = useState('latest');
   const [searchQuery, setSearchQuery] = useState('');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [gridCols, setGridCols] = useState(3);
   const [userLikes, setUserLikes] = useState<string[]>([]);
   const { user } = useAuth();
+  const supabase = createClient();
 
   useEffect(() => {
     if (user) {
@@ -43,7 +43,7 @@ export default function AlbumClient({ initialPosts, settings }: AlbumClientProps
     } else {
       setUserLikes([]);
     }
-  }, [user]);
+  }, [user, supabase]);
 
   const getAlignmentProps = (align: string) => {
     switch (align) {
@@ -107,7 +107,6 @@ export default function AlbumClient({ initialPosts, settings }: AlbumClientProps
       } else {
         setUserLikes(prev => prev.filter(id => id !== postId));
       }
-      alert('좋아요 상태를 변경하는 중 오류가 발생했습니다.');
     }
   };
 
@@ -189,83 +188,82 @@ export default function AlbumClient({ initialPosts, settings }: AlbumClientProps
       </div>
 
       <section className={styles.cardSection}>
-        <div className={styles.grid} style={{ '--grid-cols': gridCols } as React.CSSProperties}>
-          {filteredPosts.map((post) => (
-            <Link key={post.id} href={`/post/${post.id}`} className={styles.card}>
-              <div className={styles.cardImageWrapper}>
-                {post.thumbnail_url ? (
-                  <Image 
-                    src={post.thumbnail_url} 
-                    alt={post.title} 
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className={styles.cardImage}
-                    style={{ objectFit: 'cover' }}
-                  />
-                ) : (
-                  <div className={styles.cardPlaceholder}>
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D0C6E6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
-                    </svg>
-                  </div>
-                )}
-              </div>
-              
-              <div className={styles.cardContent}>
-                <div className={styles.titleRow}>
-                  {settings.showAlbumTitle && (
-                    <h3 
-                      className={styles.cardTitle}
-                      style={{ 
-                        '--album-font-size': `${settings.albumFontSize}px`,
-                        fontFamily: settings.albumFont,
-                        textAlign: albumAlignProps.textAlign as any,
-                        flex: 1
-                      } as any}
-                    >
-                      {post.title}
-                    </h3>
+        <div className={styles.grid} style={{ '--grid-cols': gridCols } as any}>
+          {filteredPosts.map((post) => {
+            const cardUrl = post.google_photos_link || `/post/${post.id}`;
+            const isExternal = !!post.google_photos_link;
+
+            return (
+              <Link 
+                key={post.id} 
+                href={cardUrl} 
+                target={isExternal ? "_blank" : "_self"}
+                className={styles.card}
+              >
+                <div className={styles.cardImageWrapper}>
+                  {post.thumbnail_url ? (
+                    <Image 
+                      src={post.thumbnail_url} 
+                      alt={post.title} 
+                      fill
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                      className={styles.cardImage}
+                      style={{ objectFit: 'cover' }}
+                    />
+                  ) : (
+                    <div className={styles.cardPlaceholder}>
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#D0C6E6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/>
+                      </svg>
+                    </div>
                   )}
-                  <div 
-                    className={styles.heartBtn}
-                    onClick={(e) => handleToggleFavorite(e, post.id)}
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill={userLikes.includes(post.id) ? "#E6A8A8" : "none"} stroke={userLikes.includes(post.id) ? "#E6A8A8" : "#D0CCD3"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                    </svg>
+                </div>
+                
+                <div className={styles.cardContent}>
+                  <div className={styles.titleRow}>
+                    {settings.showAlbumTitle && (
+                      <h3 
+                        className={styles.cardTitle}
+                        style={{ 
+                          fontFamily: settings.albumFont,
+                          fontSize: `${settings.albumFontSize}px`,
+                          textAlign: albumAlignProps.textAlign as any,
+                          flex: 1
+                        }}
+                      >
+                        {post.title}
+                      </h3>
+                    )}
+                    <div 
+                      className={styles.heartBtn}
+                      onClick={(e) => handleToggleFavorite(e, post.id)}
+                    >
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill={userLikes.includes(post.id) ? "#E6A8A8" : "none"} stroke={userLikes.includes(post.id) ? "#E6A8A8" : "#D0CCD3"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                      </svg>
+                    </div>
+                  </div>
+
+                  <div className={styles.tagList}>
+                    {post.tags && Array.isArray(post.tags) && post.tags.map((tag: string, i: number) => (
+                      <span key={i} className={styles.tagItem}>#{tag}</span>
+                    ))}
                   </div>
                 </div>
+              </Link>
+            );
+          })}
 
-                <div className={styles.tagList}>
-                  {post.tags && Array.isArray(post.tags) && post.tags.map((tag: string, i: number) => (
-                    <span key={i} className={styles.tagItem}>#{tag}</span>
-                  ))}
-                </div>
-              </div>
-            </Link>
-          ))}
-
-          <Link href="/record" className={styles.addCard}>
+          <Link href="/settings" className={styles.addCard}>
             <div className={styles.addIconWrapper}>
               <div className={styles.plusIcon}>+</div>
             </div>
             <div className={styles.addText}>
-              <span className={styles.addTitle}>새 앨범 만들기</span>
-              <span className={styles.addSubtitle}>새로운 추억을 시작하세요</span>
+              <span className={styles.addTitle}>관리 및 추가</span>
+              <span className={styles.addSubtitle}>기록 관리 페이지로 이동</span>
             </div>
           </Link>
         </div>
-
-        {isLoading && (
-          <div className={styles.loadingHint}>
-            <div className={styles.dotContainer}>
-              <div className={styles.dot}></div>
-              <div className={styles.dot}></div>
-              <div className={styles.dot}></div>
-            </div>
-            <span className={styles.loadingText}>더 많은 추억을 불러오는 중...</span>
-          </div>
-        )}
       </section>
     </main>
   );

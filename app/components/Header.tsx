@@ -12,7 +12,7 @@ export default function Header() {
   const navItems = [
     { name: '홈', path: '/' },
     { name: '앨범', path: '/album' },
-    { name: '기록하기', path: '/record' },
+    { name: '타임라인', path: '/timeline' },
     { name: '설정', path: '/settings' },
   ];
 

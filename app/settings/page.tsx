@@ -3,6 +3,7 @@
 export const runtime = 'edge';
 
 import { useState, useEffect, useRef } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Header from '@/app/components/Header';
 import { createClient } from '@/lib/supabase_new/client';
@@ -243,7 +244,37 @@ export default function SettingsPage() {
     <>
       <Header />
       <main className={styles.container}>
+
         <div className={styles.card}>
+          {/* 마스터 글 관리 바로가기 (통합 디자인) */}
+          <section className={styles.section} style={{ borderBottom: '1px solid #F0F0F0', paddingBottom: '30px', marginBottom: '30px' }}>
+            <div className={styles.sectionHeader}>
+              <span className={styles.sectionIcon}><AlbumIcon /></span>
+              <h2 className={styles.sectionTitle}>마스터 글 관리</h2>
+            </div>
+            <div className={styles.manageSectionWrapper}>
+              <div className={styles.manageInfo}>
+                <p className={styles.label} style={{ marginBottom: 0 }}>
+                  정원의 새로운 기록을 남기거나, 기존의 모든 기록들을 한눈에 보고 관리할 수 있습니다.
+                </p>
+              </div>
+              <div className={styles.manageActions}>
+                <Link href="/record">
+                  <button className={styles.btnAction} style={{ width: '100%', backgroundColor: '#9D4EDD', color: 'white', borderColor: '#9D4EDD' }}>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    새 기록 추가하기
+                  </button>
+                </Link>
+                <Link href="/settings/manage-posts">
+                  <button className={styles.btnAction} style={{ width: '100%' }}>
+                    <AlbumIcon />
+                    관리 페이지 이동
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </section>
+
           {/* 0. 디자인 테마 설정 */}
           <section 
             className={styles.section}
