@@ -1,20 +1,15 @@
-"use client";
-
 export const runtime = 'edge';
-export const dynamic = 'force-dynamic';
+export const revalidate = 0; // 최신 데이터를 보장하면서 서버에서 렌더링
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { fontOptions } from '@/lib/fonts';
 import styles from './page.module.css';
 
-export default function Home() {
-  const [posts, setPosts] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
-  // Settings state
-  const [settings, setSettings] = useState({
+export default async function Home() {
+  // 1. Fetch Data on the Server
+  let settings = {
     bannerText: '조정원의 정원',
     bannerPos: 'left',
     bannerFontSize: 48,
@@ -24,76 +19,62 @@ export default function Home() {
     albumAlign: 'left',
     showAlbumTitle: true,
     showBanner: true,
-  });
+  };
 
-  useEffect(() => {
-    const fetchSettingsAndPosts = async () => {
-      setIsLoading(true);
-      try {
-        // 1. Fetch Settings from Supabase
-        const { data: settingsData, error: settingsError } = await supabase
-          .from('site_settings')
-          .select('*')
-          .eq('id', 'global')
-          .single();
+  let posts: any[] = [];
+  let selectedIds: string[] = [];
 
-        let currentSettings = settings;
-        let selectedIds: string[] = [];
+  try {
+    // Fetch Settings
+    const { data: settingsData } = await supabase
+      .from('site_settings')
+      .select('*')
+      .eq('id', 'global')
+      .single();
 
-        if (settingsData && !settingsError) {
-          currentSettings = {
-            bannerText: settingsData.banner_text ?? '조정원의 정원',
-            bannerPos: settingsData.banner_pos || 'left',
-            bannerFontSize: settingsData.banner_font_size || 48,
-            bannerImage: settingsData.banner_image_url || '/images/hero_banner.png',
-            albumFont: fontOptions.find(f => f.id === settingsData.home_album_font || f.family === settingsData.home_album_font)?.family || "'Noto Sans KR', sans-serif",
-            albumFontSize: settingsData.home_album_font_size || 20,
-            albumAlign: settingsData.home_album_align || 'left',
-            showAlbumTitle: settingsData.home_show_album_title ?? true,
-            showBanner: settingsData.show_banner ?? true,
-          };
-          setSettings(currentSettings);
-          selectedIds = settingsData.selected_home_posts || [];
-        }
+    if (settingsData) {
+      settings = {
+        bannerText: settingsData.banner_text ?? '조정원의 정원',
+        bannerPos: settingsData.banner_pos || 'left',
+        bannerFontSize: settingsData.banner_font_size || 48,
+        bannerImage: settingsData.banner_image_url || '/images/hero_banner.png',
+        albumFont: fontOptions.find(f => f.id === settingsData.home_album_font || f.family === settingsData.home_album_font)?.family || "'Noto Sans KR', sans-serif",
+        albumFontSize: settingsData.home_album_font_size || 20,
+        albumAlign: settingsData.home_album_align || 'left',
+        showAlbumTitle: settingsData.home_show_album_title ?? true,
+        showBanner: settingsData.show_banner ?? true,
+      };
+      selectedIds = settingsData.selected_home_posts || [];
+    }
 
-        // 2. Fetch Posts based on selected IDs or default
-        let query = supabase.from('posts').select('*');
-        
-        if (selectedIds.length > 0) {
-          query = query.in('id', selectedIds);
-        } else {
-          query = query.order('created_at', { ascending: false }).limit(8);
-        }
+    // Fetch Posts
+    let query = supabase.from('posts').select('*');
+    if (selectedIds.length > 0) {
+      query = query.in('id', selectedIds);
+    } else {
+      query = query.order('created_at', { ascending: false }).limit(8);
+    }
 
-        const { data, error } = await query;
-
-        if (!error && data) {
-          if (selectedIds.length > 0) {
-            const sortedData = [...data].sort((a, b) => 
-              selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id)
-            );
-            setPosts(sortedData);
-          } else {
-            setPosts(data);
-          }
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setIsLoading(false);
+    const { data } = await query;
+    if (data) {
+      if (selectedIds.length > 0) {
+        posts = [...data].sort((a, b) => 
+          selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id)
+        );
+      } else {
+        posts = data;
       }
-    };
+    }
+  } catch (err) {
+    console.error('Error fetching data on server:', err);
+  }
 
-    fetchSettingsAndPosts();
-  }, []);
-
-  // Ensure exactly 8 cards are shown for the 4x2 grid
+  // Ensure exactly 8 cards are shown
   const displayCards = [...posts];
   while (displayCards.length < 8) {
     displayCards.push({ id: `empty-${displayCards.length}`, isEmpty: true });
   }
 
-  // Helper to map alignment to flex properties
   const getAlignmentProps = (align: string) => {
     switch (align) {
       case 'center': return { justifyContent: 'center', textAlign: 'center' as const };
@@ -103,26 +84,20 @@ export default function Home() {
   };
 
   const albumAlignProps = getAlignmentProps(settings.albumAlign);
-  const bannerAlignProps = getAlignmentProps(settings.bannerPos);
-
-  if (isLoading) {
-    return (
-      <div style={{ backgroundColor: '#000', height: '100vh', width: '100vw', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff' }}>
-        정원의 정원을 불러오는 중...
-      </div>
-    );
-  }
 
   return (
     <>
       <div className={styles.container}>
         {settings.showBanner && (
-          <section 
-            className={styles.heroBanner} 
-            style={{ 
-              backgroundImage: `url(${settings.bannerImage})`,
-            }}
-          >
+          <section className={styles.heroBanner}>
+            <Image 
+              src={settings.bannerImage}
+              alt="Hero Banner"
+              fill
+              priority
+              className={styles.heroImage}
+              style={{ objectFit: 'cover' }}
+            />
           </section>
         )}
 
@@ -139,7 +114,14 @@ export default function Home() {
                   <div className={styles.card}>
                     <div className={styles.imageContainer}>
                       {card.thumbnail_url ? (
-                        <img src={card.thumbnail_url} alt={card.title} className={styles.cardImage} />
+                        <Image 
+                          src={card.thumbnail_url} 
+                          alt={card.title} 
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 25vw"
+                          className={styles.cardImage}
+                          style={{ objectFit: 'cover' }}
+                        />
                       ) : (
                         <div className={`${styles.cardImage} ${styles.cardPlaceholder}`}>
                           <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.8 }}>
@@ -180,10 +162,10 @@ export default function Home() {
         </section>
       </div>
 
-      {/* Footer */}
       <footer className={styles.footer}>
         © 2024 정원의 정원. All moments cherished.
       </footer>
     </>
   );
 }
+

@@ -19,10 +19,15 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.06);
   display: flex;
   align-items: center;
-  background-image: url('/images/hero_banner.png');
-  background-size: cover;
-  background-position: center;
   border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.heroImage {
+  transition: transform 0.8s ease;
+}
+
+.heroBanner:hover .heroImage {
+  transform: scale(1.05);
 }
 
 .heroOverlay {
