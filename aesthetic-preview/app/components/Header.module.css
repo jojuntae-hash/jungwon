@@ -1,0 +1,156 @@
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  padding: 12px 0;
+  transition: all 0.3s ease;
+}
+
+.headerContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Logo Card Style */
+.logoCard {
+  padding: 10px 24px;
+  background-color: var(--secondary-color);
+  border-radius: 18px;
+  color: var(--primary-color);
+  font-weight: 800;
+  font-size: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.logoCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.navAndAuth {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.nav {
+  display: flex;
+  gap: 12px;
+}
+
+/* Nav Card Style */
+.navCard {
+  padding: 10px 20px;
+  background-color: var(--card-bg);
+  border-radius: 18px;
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 14px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  opacity: 0.9;
+}
+
+.navCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+  opacity: 1;
+  color: var(--primary-color);
+}
+
+.navCardActive {
+  background-color: var(--primary-color);
+  color: #fff !important;
+  opacity: 1;
+  box-shadow: 0 8px 20px rgba(157, 78, 221, 0.2);
+}
+
+.authSection {
+  display: flex;
+  align-items: center;
+  margin-left: 8px;
+}
+
+/* Auth Card Style */
+.authCard {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background-color: var(--card-bg);
+  border-radius: 18px;
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  cursor: pointer;
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.authCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.06);
+  background-color: #fdfdfd;
+}
+
+.authText {
+  font-size: 13px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 0;
+  }
+
+  .logoCard {
+    padding: 8px 16px;
+    font-size: 16px;
+    border-radius: 14px;
+  }
+
+  .nav {
+    gap: 8px;
+  }
+
+  .navCard {
+    padding: 8px 12px;
+    font-size: 13px;
+    border-radius: 14px;
+  }
+
+  .authCard {
+    padding: 8px 12px;
+    border-radius: 14px;
+  }
+
+  .authText {
+    display: none; /* Icon only on small mobile */
+  }
+}
+
+@media (max-width: 480px) {
+  .headerContainer {
+    padding: 0 12px;
+  }
+
+  .navAndAuth {
+    gap: 10px;
+  }
+
+  .navCard {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}

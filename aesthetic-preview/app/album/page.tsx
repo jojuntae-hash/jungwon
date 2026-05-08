@@ -37,22 +37,18 @@ export default async function AlbumPage() {
   // 2. Fetch Posts on the Server
   let posts: any[] = [];
   try {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('posts')
       .select('*')
       .order('created_at', { ascending: false });
-    
-    if (data) {
+
+    if (!error && data) {
       posts = data;
     }
   } catch (err) {
     console.error('Error fetching posts on server:', err);
   }
 
-  return (
-    <AlbumClient 
-      initialPosts={posts} 
-      settings={settings}
-    />
-  );
+  return <AlbumClient initialPosts={posts} settings={settings} />;
 }
+

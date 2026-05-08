@@ -1,0 +1,241 @@
+.pageContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 80px;
+  background-color: var(--bg-color);
+  background-image: radial-gradient(var(--secondary-color) 1px, transparent 1px);
+  background-size: 20px 20px;
+  font-family: 'Inter', 'Noto Sans KR', sans-serif;
+  box-sizing: border-box;
+}
+
+.card {
+  display: flex;
+  width: 900px;
+  height: 600px;
+  background: var(--card-bg);
+  border-radius: 30px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  z-index: 10;
+}
+
+.imageSection {
+  flex: 1;
+  background-color: var(--secondary-color);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary-color);
+}
+
+.imageOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(255,255,255,0.4));
+  z-index: 1;
+}
+
+.imageContent {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 40px;
+}
+
+.logoIcon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 16px;
+}
+
+.imageTitle {
+  font-size: 36px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+}
+
+.imageSubtitle {
+  font-size: 16px;
+  font-weight: 500;
+  opacity: 0.8;
+}
+
+.heartIcon {
+  position: absolute;
+  bottom: 30px;
+  left: 30px;
+  width: 24px;
+  height: 24px;
+  z-index: 2;
+  color: var(--primary-color);
+  opacity: 0.6;
+}
+
+.formSection {
+  flex: 1;
+  padding: 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background-color: var(--card-bg);
+}
+
+.title {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-color);
+  margin: 0 0 12px 0;
+}
+
+.subtitle {
+  font-size: 15px;
+  color: var(--text-color);
+  margin: 0 0 40px 0;
+  opacity: 0.7;
+}
+
+.formGroup {
+  margin-bottom: 24px;
+}
+
+.label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-color);
+  opacity: 0.9;
+}
+
+.input {
+  width: 100%;
+  padding: 16px 24px;
+  border-radius: 30px;
+  border: 1.5px solid transparent;
+  background-color: var(--secondary-color);
+  font-size: 15px;
+  color: var(--text-color);
+  outline: none;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  opacity: 0.8;
+}
+
+.input::placeholder {
+  color: var(--text-color);
+  opacity: 0.4;
+}
+
+.input:focus {
+  background-color: var(--card-bg);
+  border-color: var(--primary-color);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  opacity: 1;
+}
+
+.checkboxWrapper {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.checkbox {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border: 1px solid var(--secondary-color);
+  border-radius: 4px;
+  margin-right: 10px;
+  cursor: pointer;
+  position: relative;
+  background-color: var(--card-bg);
+}
+
+.checkbox:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.checkboxLabel {
+  font-size: 14px;
+  color: var(--text-color);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.button {
+  width: 100%;
+  padding: 18px;
+  border-radius: 30px;
+  border: none;
+  background-color: var(--primary-color);
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 30px;
+}
+
+.button:hover {
+  filter: brightness(1.1);
+  transform: translateY(-2px);
+}
+
+.signupPrompt {
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-color);
+  opacity: 0.8;
+}
+
+.signupLink {
+  font-weight: 700;
+  color: var(--primary-color);
+  text-decoration: none;
+  margin-left: 8px;
+}
+
+.footer {
+  margin-top: 40px;
+  font-size: 13px;
+  color: var(--text-color);
+  opacity: 0.5;
+  text-align: center;
+}
+
+.error {
+  color: #D32F2F;
+  font-size: 14px;
+  margin-bottom: 20px;
+  text-align: center;
+  background-color: #FFEBEE;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+/* Responsive Styles */
+@media (max-width: 950px) {
+  .card {
+    width: 90%;
+    max-width: 500px;
+    height: auto;
+    flex-direction: column;
+  }
+  
+  .imageSection {
+    padding: 40px 20px;
+  }
+  
+  .formSection {
+    padding: 40px;
+  }
+}

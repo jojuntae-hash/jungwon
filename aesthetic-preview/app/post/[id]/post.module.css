@@ -1,0 +1,262 @@
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 100px 40px 60px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 50px;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 65%;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #6B5B7B;
+  margin: 0;
+}
+
+.content {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #5A4B6A;
+  margin: 0;
+}
+
+.headerRight {
+  display: flex;
+  gap: 12px;
+}
+
+.editBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #D0CCD3;
+  background-color: white;
+  color: #4A3C59;
+  transition: all 0.2s;
+}
+
+.editBtn:hover {
+  background-color: #F8F9FA;
+}
+
+/* Large Thumbnail Area */
+.albumSection {
+  position: relative;
+  width: 100%;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.08);
+  background-color: #F0F0F0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+}
+
+.albumImage {
+  width: 100%;
+  height: auto;
+  max-height: 80vh;
+  object-fit: contain;
+  display: block;
+}
+
+.albumSection:hover .albumImage {
+  transform: scale(1.03);
+}
+
+.albumOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.albumSection:hover .albumOverlay {
+  opacity: 1;
+}
+
+.playIcon {
+  width: 80px;
+  height: 80px;
+  background-color: rgba(255,255,255,0.25);
+  backdrop-filter: blur(10px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+  transition: transform 0.2s;
+}
+
+.albumSection:hover .playIcon {
+  transform: scale(1.1);
+}
+
+.overlayText {
+  font-size: 22px;
+  font-weight: 700;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  letter-spacing: 0.5px;
+}
+
+.emptyState {
+  height: 400px;
+  background-color: #F8F9FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30px;
+  color: #8C8C8C;
+  font-size: 16px;
+}
+
+.googlePhotosBtn {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 12px;
+  color: #3C4043;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.googlePhotosBtn:hover {
+  background: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.googlePhotosBtn svg {
+  margin-right: 4px;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 80px 20px 40px;
+  }
+  
+  .header {
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+  
+  .headerLeft {
+    max-width: 100%;
+  }
+  
+  .title {
+    font-size: 20px;
+  }
+  
+  .albumSection {
+    border-radius: 20px;
+  }
+  
+  .overlayText {
+    font-size: 18px;
+  }
+}
+
+@media (max-width: 480px) {
+  .headerRight {
+    width: 100%;
+  }
+  
+  .editBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}
+
+.heartBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid #D0CCD3;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #D0CCD3;
+}
+
+.heartBtn:hover {
+  background-color: #F8F9FA;
+  transform: scale(1.05);
+}
+
+.heartBtnActive {
+  color: #E6A8A8;
+  border-color: #E6A8A8;
+}
+
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 25px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid #FFEBEB;
+  background-color: #FFF5F5;
+  color: #E03131;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background-color: #FFE3E3;
+  border-color: #FFA8A8;
+  transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .deleteBtn {
+    flex: 1;
+    justify-content: center;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+}

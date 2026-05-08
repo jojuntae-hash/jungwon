@@ -185,10 +185,9 @@ export default function SettingsPage() {
         album_font_size: albumFontSize,
         album_align: albumAlign,
         show_album_title: showAlbumTitle,
-        // Unify home settings with global album settings
-        home_album_font_size: albumFontSize,
-        home_album_align: albumAlign,
-        home_show_album_title: showAlbumTitle,
+        home_album_font_size: homeAlbumFontSize,
+        home_album_align: homeAlbumAlign,
+        home_show_album_title: homeShowAlbumTitle,
         selected_home_posts: selectedHomePosts.filter(id => allPosts.some(p => p.id === id)),
         show_banner: showBanner,
         updated_at: new Date().toISOString(),
