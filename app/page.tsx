@@ -1,5 +1,5 @@
 export const runtime = 'edge';
-export const revalidate = 0; // 최신 데이터를 보장하면서 서버에서 렌더링
+export const revalidate = 60; // 60초 캐시로 콜드 스타트 완화 및 성능 향상
 
 import Link from 'next/link';
 import Image from 'next/image';

@@ -1,5 +1,5 @@
 export const runtime = 'edge';
-export const revalidate = 0;
+export const revalidate = 60;
 
 import { createClient } from '@/lib/supabase_new/server';
 import { fontOptions } from '@/lib/fonts';
