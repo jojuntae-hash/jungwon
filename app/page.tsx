@@ -1,5 +1,5 @@
 export const runtime = 'edge';
-export const revalidate = 60; // 60초 캐시로 콜드 스타트 완화 및 성능 향상
+export const revalidate = 3600; // 1시간 캐시로 DB 부하 최소화 및 성능 극대화
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -58,16 +58,19 @@ export default async function Home() {
 
     // 2. Determine posts to display
     if (selectedIds.length > 0) {
-      // If specific posts are selected, fetch them (sequential but only if necessary)
-      const { data: postsData } = await supabase
+      // If specific posts are selected, fetch them
+      const { data: postsData, error: postsError } = await supabase
         .from('posts')
         .select('id, title, thumbnail_url, google_photos_link, created_at')
         .in('id', selectedIds);
       
-      if (postsData) {
+      if (postsData && !postsError) {
         posts = [...postsData].sort((a, b) => 
           selectedIds.indexOf(a.id) - selectedIds.indexOf(b.id)
         );
+      } else {
+        // Fallback to latest posts if fetch fails
+        posts = latestPostsRes.data || [];
       }
     } else {
       // Use the pre-fetched latest posts

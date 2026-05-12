@@ -1,5 +1,5 @@
 export const runtime = 'edge';
-export const revalidate = 60;
+export const revalidate = 3600; // 1시간 캐시
 
 import { createClient } from '@/lib/supabase_new/server';
 import { fontOptions } from '@/lib/fonts';

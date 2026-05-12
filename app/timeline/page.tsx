@@ -1,5 +1,5 @@
 export const runtime = 'edge';
-export const revalidate = 60;
+export const revalidate = 3600; // 1시간 캐시
 
 import Link from 'next/link';
 import Image from 'next/image';
